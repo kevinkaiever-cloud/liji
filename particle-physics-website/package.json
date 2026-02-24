@@ -27,12 +27,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/quantum-particle-simulator"
+    "url": "https://github.com/kevinkaiever-cloud/liji"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/quantum-particle-simulator/issues"
+    "url": "https://github.com/kevinkaiever-cloud/liji/issues"
   },
-  "homepage": "https://yourusername.github.io/quantum-particle-simulator",
+  "homepage": "https://kevinkaiever-cloud.github.io/liji",
   "devDependencies": {
     "eslint": "^8.0.0",
     "prettier": "^3.0.0",
