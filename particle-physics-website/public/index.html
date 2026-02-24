@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌀 量子粒子模拟器 | Quantum Particle Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌀</text></svg>">
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div id="loading" class="loading-screen">
+        <div class="loading-content">
+            <div class="quantum-loader">
+                <div class="particle-ring"></div>
+                <div class="particle-ring"></div>
+                <div class="particle-ring"></div>
+            </div>
+            <h2>初始化量子场...</h2>
+            <p class="loading-subtitle">正在生成粒子宇宙</p>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 标题区域 -->
+        <header class="header">
+            <div class="title-section">
+                <h1 class="main-title">
+                    <span class="title-gradient">🌀 量子粒子模拟器</span>
+                    <span class="title-sub">Quantum Particle Simulator</span>
+                </h1>
+                <div class="title-decoration">
+                    <div class="energy-pulse"></div>
+                    <div class="floating-dots">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-controls">
+                <button id="themeToggle" class="btn-icon" title="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button id="fullscreenToggle" class="btn-icon" title="全屏">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button id="helpToggle" class="btn-icon" title="帮助">
+                    <i class="fas fa-question"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 左侧控制面板 -->
+            <aside class="control-panel">
+                <div class="panel-section">
+                    <h3 class="panel-title">
+                        <i class="fas fa-sliders-h"></i>
+                        粒子控制
+                    </h3>
+                    
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-atom"></i>
+                            粒子数量
+                            <span id="particleCountValue" class="value-display">500</span>
+                        </label>
+                        <input type="range" id="particleCount" class="slider" min="50" max="2000" value="500" step="50">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-bolt"></i>
+                            粒子速度
+                            <span id="particleSpeedValue" class="value-display">1.0</span>
+                        </label>
+                        <input type="range" id="particleSpeed" class="slider" min="0.1" max="3.0" value="1.0" step="0.1">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-magnet"></i>
+                            引力强度
+                            <span id="gravityValue" class="value-display">0.5</span>
+                        </label>
+                        <input type="range" id="gravity" class="slider" min="0" max="2.0" value="0.5" step="0.1">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                            排斥力
+                            <span id="repulsionValue" class="value-display">0.3</span>
+                        </label>
+                        <input type="range" id="repulsion" class="slider" min="0" max="1.0" value="0.3" step="0.1">
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h3 class="panel-title">
+                        <i class="fas fa-palette"></i>
+                        视觉效果
+                    </h3>
+                    
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-paint-brush"></i>
+                            颜色模式
+                        </label>
+                        <div class="button-group">
+                            <button class="mode-btn active" data-mode="rainbow">彩虹</button>
+                            <button class="mode-btn" data-mode="energy">能量</button>
+                            <button class="mode-btn" data-mode="mono">单色</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-wave-square"></i>
+                            轨迹长度
+                            <span id="trailLengthValue" class="value-display">20</span>
+                        </label>
+                        <input type="range" id="trailLength" class="slider" min="0" max="100" value="20" step="5">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">
+                            <i class="fas fa-star"></i>
+                            粒子大小
+                            <span id="particleSizeValue" class="value-display">3</span>
+                        </label>
+                        <input type="range" id="particleSize" class="slider" min="1" max="10" value="3" step="1">
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h3 class="panel-title">
+                        <i class="fas fa-play-circle"></i>
+                        模拟控制
+                    </h3>
+                    
+                    <div class="button-row">
+                        <button id="playPause" class="btn-primary">
+                            <i class="fas fa-play"></i>
+                            开始模拟
+                        </button>
+                        <button id="reset" class="btn-secondary">
+                            <i class="fas fa-redo"></i>
+                            重置
+                        </button>
+                    </div>
+                    
+                    <div class="button-row">
+                        <button id="addParticles" class="btn-outline">
+                            <i class="fas fa-plus-circle"></i>
+                            添加粒子
+                        </button>
+                        <button id="clearParticles" class="btn-outline">
+                            <i class="fas fa-trash"></i>
+                            清除
+                        </button>
+                    </div>
+                    
+                    <div class="stats-display">
+                        <div class="stat-item">
+                            <span class="stat-label">FPS</span>
+                            <span id="fpsCounter" class="stat-value">60</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">粒子</span>
+                            <span id="activeParticles" class="stat-value">500</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">能量</span>
+                            <span id="energyLevel" class="stat-value">85%</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 主画布区域 -->
+            <section class="canvas-section">
+                <div class="canvas-container">
+                    <canvas id="particleCanvas"></canvas>
+                    
+                    <div class="canvas-overlay">
+                        <div class="interaction-hint">
+                            <i class="fas fa-mouse-pointer"></i>
+                            点击或拖动添加粒子
+                        </div>
+                        <div class="physics-info">
+                            <div class="info-bubble">
+                                <i class="fas fa-info-circle"></i>
+                                实时物理模拟中
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="canvas-controls">
+                        <button id="toggleGrid" class="btn-small active">
+                            <i class="fas fa-th"></i>
+                            网格
+                        </button>
+                        <button id="toggleTrails" class="btn-small active">
+                            <i class="fas fa-road"></i>
+                            轨迹
+                        </button>
+                        <button id="toggleLines" class="btn-small">
+                            <i class="fas fa-project-diagram"></i>
+                            连线
+                        </button>
+                        <button id="toggleSound" class="btn-small">
+                            <i class="fas fa-volume-mute"></i>
+                            音效
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="experiment-section">
+                    <h3 class="experiment-title">
+                        <i class="fas fa-flask"></i>
+                        实验模式
+                    </h3>
+                    
+                    <div class="experiment-buttons">
+                        <button class="experiment-btn" data-experiment="vortex">
+                            <div class="experiment-icon">
+                                <i class="fas fa-wind"></i>
+                            </div>
+                            <span class="experiment-label">漩涡场</span>
+                        </button>
+                        
+                        <button class="experiment-btn" data-experiment="explosion">
+                            <div class="experiment-icon">
+                                <i class="fas fa-bomb"></i>
+                            </div>
+                            <span class="experiment-label">粒子爆炸</span>
+                        </button>
+                        
+                        <button class="experiment-btn" data-experiment="attractor">
+                            <div class="experiment-icon">
+                                <i class="fas fa-magnet"></i>
+                            </div>
+                            <span class="experiment-label">引力中心</span>
+                        </button>
+                        
+                        <button class="experiment-btn" data-experiment="wave">
+                            <div class="experiment-icon">
+                                <i class="fas fa-water"></i>
+                            </div>
+                            <span class="experiment-label">波函数</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右侧信息面板 -->
+            <aside class="info-panel">
+                <div class="panel-section">
+                    <h3 class="panel-title">
+                        <i class="fas fa-brain"></i>
+                        物理参数
+                    </h3>
+                    
+                    <div class="parameter-display">
+                        <div class="parameter">
+                            <span class="param-label">温度</span>
+                            <div class="param-bar">
+                                <div class="param-fill" style="width: 65%"></div>
+                            </div>
+                            <span class="param-value">325K</span>
+                        </div>
+                        
+                        <div class="parameter">
+                            <span class="param-label">熵值</span>
+                            <div class="param-bar">
+                                <div class="param-fill" style="width: 42%"></div>
+                            </div>
+                            <span class="param-value">0.42</span>
+                        </div>
+                        
+                        <div class="parameter">
+                            <span class="param-label">混沌度</span>
+                            <div class="param-bar">
+                                <div class="param-fill" style="width: 78%"></div>
+                            </div>
+                            <span class="param-value">高</span>
+                        </div>
+                        
+                        <div class="parameter">
+                            <span class="param-label">系统能量</span>
+                            <div class="param-bar">
+                                <div class="param-fill" style="width: 85%"></div>
+                            </div>
+                            <span class="param-value">8.5e³ J</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h3 class="panel-title">
+                        <i class="fas fa-chart-line"></i>
+                        实时图表
+                    </h3>
+                    
+                    <div class="chart-container">
+                        <canvas id="energyChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #00ff88"></span>
+                            <span>动能</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #ff0088"></span>
+                            <span>势能</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #0088ff"></span>
+                            <span>总能量</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h3 class="panel-title">
+                        <i class="fas fa-code"></i>
+                        系统信息
+                    </h3>
+                    
+                    <div class="system-info">
+                        <div class="info-item">
+                            <span class="info-label">渲染引擎</span>
+                            <span class="info-value">WebGL 2.0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">物理引擎</span>
+                            <span class="info-value">Verlet 积分</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">粒子系统</span>
+                            <span class="info-value">GPU 加速</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">最后更新</span>
+                            <span id="lastUpdate" class="info-value">刚刚</span>
+                        </div>
+                    </div>
+                    
+                    <div class="credits">
+                        <p>🌀 量子粒子模拟器 v1.0</p>
+                        <p>基于 Canvas 2D + JavaScript 物理引擎</p>
+                        <p class="timestamp">生成时间: <span id="generationTime">2026-02-24 22:22:00</span></p>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- 底部状态栏 -->
+        <footer class="footer">
+            <div class="status-bar">
+                <div class="status-item">
+                    <div class="status-indicator active"></div>
+                    <span>模拟运行中</span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-microchip"></i>
+                    <span>GPU 加速: <span id="gpuStatus">启用</span></span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-clock"></i>
+                    <span>运行时间: <span id="uptime">00:00:00</span></span>
+                </div>
+                <div class="status-item">
+                    <i class="fas fa-memory"></i>
+                    <span>内存使用: <span id="memoryUsage">42 MB</span></span>
+                </div>
+            </div>
+            
+            <div class="footer-controls">
+                <button id="exportBtn" class="btn-text">
+                    <i class="fas fa-download"></i>
+                    导出快照
+                </button>
+                <button id="shareBtn" class="btn-text">
+                    <i class="fas fa-share-alt"></i>
+                    分享配置
+                </button>
+                <button id="codeBtn" class="btn-text">
+                    <i class="fas fa-code"></i>
+                    查看源码
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 帮助模态框 -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-question-circle"></i> 使用指南</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="help-section">
+                    <h4><i class="fas fa-gamepad"></i> 交互控制</h4>
+                    <ul>
+                        <li><strong>点击画布</strong>: 在点击位置添加新粒子</li>
+                        <li><strong>拖动鼠标</strong>: 创建粒子流</li>
+                        <li><strong>鼠标滚轮</strong>: 调整视图缩放</li>
+                        <li><strong>空格键</strong>: 暂停/继续模拟</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class="fas fa-sliders-h"></i> 参数说明</h4>
+                    <ul>
+                        <li><strong>粒子数量</strong>: 控制模拟中粒子的总数</li>
+                        <li><strong>粒子速度</strong>: 调整粒子的运动速度</li>
+                        <li><strong>引力强度</strong>: 控制粒子间的吸引力</li>
+                        <li><strong>排斥力</strong>: 控制粒子间的排斥力</li>
+                    </ul>
+                </div>
+                <div class="help-section">
+                    <h4><i class="fas fa-vial"></i> 实验模式</h4>
+                    <p>尝试不同的物理场景预设，观察粒子在不同力场中的行为。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音频上下文提示 -->
+    <div id="audioPrompt" class="audio-prompt">
+        <div class="audio-content">
+            <i class="fas fa-volume-up"></i>
+            <p>点击任意位置启用交互音效</p>
+            <button id="enableAudio" class="btn-small">启用音效</button>
+        </div>
+    </div>
+
+    <!-- 脚本引入 -->
+    <script src="https://cdn

@@ -1,0 +1,58 @@
+{
+  "name": "quantum-particle-simulator",
+  "version": "1.0.0",
+  "description": "交互式量子粒子物理模拟网站",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "node scripts/build.js serve",
+    "build": "node scripts/build.js build",
+    "clean": "node scripts/build.js clean",
+    "analyze": "node scripts/build.js analyze",
+    "dev": "live-server public --port=3000 --watch=public",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write \"**/*.{js,html,css,json,md}\"",
+    "test": "echo \"No tests specified\" && exit 0",
+    "deploy": "gh-pages -d dist"
+  },
+  "keywords": [
+    "particle",
+    "physics",
+    "simulation",
+    "quantum",
+    "interactive",
+    "canvas",
+    "animation"
+  ],
+  "author": "熙熙 (Xixi) <assistant@openclaw.ai>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/quantum-particle-simulator"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/quantum-particle-simulator/issues"
+  },
+  "homepage": "https://yourusername.github.io/quantum-particle-simulator",
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0",
+    "live-server": "^1.2.0",
+    "gh-pages": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ],
+  "files": [
+    "public/",
+    "src/",
+    "scripts/",
+    "README.md",
+    "package.json"
+  ]
+}

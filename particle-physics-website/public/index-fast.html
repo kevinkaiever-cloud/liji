@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ 超快量子粒子模拟器</title>
+    <style>
+        /* 极简加载样式 */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a0e17;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .quantum-loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid transparent;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 主容器 */
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #0a0e17;
+            color: #e2e8f0;
+            font-family: system-ui, sans-serif;
+        }
+        
+        .header {
+            padding: 1rem;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        
+        .main-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin: 0;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            position: relative;
+        }
+        
+        #particleCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .quick-controls {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .control-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+        
+        .status-bar {
+            padding: 0.5rem 1rem;
+            background: rgba(30, 41, 59, 0.7);
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .performance {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            font-size: 0.8rem;
+        }
+        
+        .performance span {
+            color: #3b82f6;
+            font-weight: bold;
+        }
+        
+        .interaction-hint {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(30, 41, 59, 0.9);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: 1px solid #3b82f6;
+            text-align: center;
+            animation: fadeInOut 3s ease forwards;
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 极简加载屏幕 -->
+    <div id="loading">
+        <div class="loading-content">
+            <div class="quantum-loader"></div>
+            <div>⚡ 量子场初始化中...</div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="header">
+            <h1 class="main-title">⚡ 超快量子粒子模拟器</h1>
+        </header>
+        
+        <main class="canvas-container">
+            <canvas id="particleCanvas"></canvas>
+            
+            <div class="performance">
+                FPS: <span id="fpsCounter">60</span> | 
+                粒子: <span id="particleCount">50</span>
+            </div>
+            
+            <div class="interaction-hint">
+                💡 点击或拖动添加粒子 | 空格键暂停
+            </div>
+            
+            <div class="quick-controls">
+                <button id="addParticles" class="control-btn">+ 添加粒子</button>
+                <button id="playPause" class="control-btn">⏸️ 暂停</button>
+                <button id="reset" class="control-btn">🔄 重置</button>
+                <button id="experiment" class="control-btn">🌀 漩涡场</button>
+            </div>
+        </main>
+        
+        <footer class="status-bar">
+            <div class="status-item">⚡ 超快模式 | 加载时间: < 0.5秒</div>
+            <div class="status-item">🕒 生成时间: <span id="generationTime">刚刚</span></div>
+        </footer>
+    </div>
+
+    <script>
+        // ===== 超快量子粒子模拟器 =====
+        class UltraFastParticleSimulator {
+            constructor() {
+                this.canvas = document.getElementById('particleCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.isRunning = true;
+                this.mouse = { x: 0, y: 0, down: false };
+                this.fps = 60;
+                this.frameCount = 0;
+                this.lastFpsUpdate = 0;
+                
+                // 立即初始化
+                this.init();
+            }
+            
+            init() {
+                // 1. 立即设置Canvas
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                // 2. 立即创建粒子
+                this.createParticles(50);
+                
+                // 3. 立即开始动画
+                this.startAnimation();
+                
+                // 4. 立即隐藏加载屏幕
+                setTimeout(() => {
+                    document.getElementById('loading').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('loading').style.display = 'none';
+                    }, 300);
+                }, 300); // 只显示0.3秒！
+                
+                // 5. 设置交互
+                this.setupInteractions();
+                
+                // 6. 更新显示
+                this.updateDisplay();
+            }
+            
+            resizeCanvas() {
+                this.canvas.width = this.canvas.parentElement.clientWidth;
+                this.canvas.height = this.canvas.parentElement.clientHeight;
+            }
+            
+            createParticles(count) {
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        vx: (Math.random() - 0.5) * 3,
+                        vy: (Math.random() - 0.5) * 3,
+                        radius: 2 + Math.random() * 3,
+                        color: this.getRandomColor(),
+                        life: 1
+                    });
+                }
+            }
+            
+            getRandomColor() {
+                const colors = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            startAnimation() {
+                const animate = (time) => {
+                    if (!this.isRunning) return;
+                    
+                    // 更新性能计数
+                    this.frameCount++;
+                    const now = performance.now();
+                    if (now - this.lastFpsUpdate >= 1000) {
+                        this.fps = Math.round((this.frameCount * 1000) / (now - this.lastFpsUpdate));
+                        this.lastFpsUpdate = now;
+                        this.frameCount = 0;
+                        document.getElementById('fpsCounter').textContent = this.fps;
+                    }
+                    
+                    // 更新和渲染
+                    this.updateParticles();
+                    this.render();
+                    
+                    requestAnimationFrame(animate);
+                };
+                
+                requestAnimationFrame(animate);
+            }
+            
+            updateParticles() {
+                for (const p of this.particles) {
+                    // 简单物理
+                    const centerX = this.canvas.width / 2;
+                    const centerY = this.canvas.height / 2;
+                    const dx = centerX - p.x;
+                    const dy = centerY - p.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist > 0) {
+                        p.vx += (dx / dist) * 0.01;
+                        p.vy += (dy / dist) * 0.01;
+                    }
+                    
+                    // 鼠标引力
+                    if (this.mouse.down) {
+                        const mdx = this.mouse.x - p.x;
+                        const mdy = this.mouse.y - p.y;
+                        const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
+                        
+                        if (mdist < 200 && mdist > 0) {
+                            p.vx += (mdx / mdist) * 0.5;
+                            p.vy += (mdy / mdist) * 0.5;
+                        }
+                    }
+                    
+                    // 更新位置
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    
+                    // 边界碰撞
+                    if (p.x < p.radius) { p.x = p.radius; p.vx = Math.abs(p.vx); }
+                    if (p.x > this.canvas.width - p.radius) { p.x = this.canvas.width - p.radius; p.vx = -Math.abs(p.vx); }
+                    if (p.y < p.radius) { p.y = p.radius; p.vy = Math.abs(p.vy); }
+                    if (p.y > this.canvas.height - p.radius) { p.y = this.canvas.height - p.radius; p.vy = -Math.abs(p.vy); }
+                    
+                    // 速度衰减
+                    p.vx *= 0.99;
+                    p.vy *= 0.99;
+                }
+            }
+            
+            render() {
+                // 快速清除
+                this.ctx.fillStyle = 'rgba(10, 14, 23, 0.1)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // 绘制粒子
+                for (const p of this.particles) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fillStyle = p.color;
+                    this.ctx.fill();
+                    
+                    // 发光效果
+                    this.ctx.shadowColor = p.color;
+                    this.ctx.shadowBlur = 15;
+                    this.ctx.fill();
+                    this.ctx.shadowBlur = 0;
+                }
+                
+                // 绘制鼠标效果
+                if (this.mouse.down) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.mouse.x, this.mouse.y, 30, 0, Math.PI * 2);
+                    this.ctx.fillStyle = 'rgba(59, 130, 246, 0.2)';
+                    this.ctx.fill();
+                }
+            }
+            
+            setupInteractions() {
+                // 鼠标事件
+                this.canvas.addEventListener('mousedown', (e) => {
+                    this.mouse.down = true;
+                    this.updateMousePosition(e);
+                    this.addParticleAtMouse(e);
+                });
+                
+                this.canvas.addEventListener('mouseup', () => {
+                    this.mouse.down = false;
+                });
+                
+                this.canvas.addEventListener('mousemove', (e) => {
+                    this.updateMousePosition(e);
+                    if (this.mouse.down) {
+                        this.addParticleAtMouse(e);
+                    }
+                });
+                
+                // 控制按钮
+                document.getElementById('addParticles').addEventListener('click', () => {
+                    this.createParticles(50);
+                    document.getElementById('particleCount').textContent = this.particles.length;
+                });
+                
+                document.getElementById('playPause').addEventListener('click', () => {
+                    this.isRunning = !this.isRunning;
+                    const btn = document.getElementById('playPause');
+                    btn.textContent = this.isRunning ? '⏸️ 暂停' : '▶️ 继续';
+                    if (this.isRunning) this.startAnimation();
+                });
+                
+                document.getElementById('reset').addEventListener('click', () => {
+                    this.particles = [];
+                    this.createParticles(50);
+                    document.getElementById('particleCount').textContent = this.particles.length;
+                });
+                
+                document.getElementById('experiment').addEventListener('click', () => {
+                    this.createVortex();
+                });
+                
+                // 键盘控制
+                document.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space') {
+                        e.preventDefault();
+                        this.isRunning = !this.isRunning;
+                        const btn = document.getElementById('playPause');
+                        btn.textContent = this.isRunning ? '⏸️ 暂停' : '▶️ 继续';
+                        if (this.isRunning) this.startAnimation();
+                    }
+                });
+            }
+            
+            updateMousePosition(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                this.mouse.x = e.clientX - rect.left;
+                this.mouse.y = e.clientY - rect.top;
+            }
+            
+            addParticleAtMouse(e) {
+                if (this.particles.length < 500) {
+                    const rect = this.canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    this.particles.push({
+                        x: x,
+                        y: y,
+                        vx: (Math.random() - 0.5) * 5,
+                        vy: (Math.random() - 0.5) * 5,
+                        radius: 2 + Math.random() * 4,
+                        color: this.getRandomColor(),
+                        life: 1
+                    });
+                    
+                    document.getElementById('particleCount').textContent = this.particles.length;
+                }
+            }
+            
+            createVortex() {
+                this.particles = [];
+                for (let i = 0; i < 100; i++) {
+                    const angle = (i / 100) * Math.PI * 2;
+                    const radius = 100 + Math.random() * 200;
+                    
+                    this.particles.push({
+                        x: this.canvas.width / 2 + Math.cos(angle) * radius,
+                        y: this.canvas.height / 2 + Math.sin(angle) * radius,
+                        vx: -Math.sin(angle) * 2,
+                        vy: Math.cos(angle) * 2,
+                        radius: 3,
+                        color: this.getRandomColor(),
+                        life: 1
+                    });
+                }
+                document.getElementById('particleCount').textContent = this.particles.length;
+            }
+            
+            updateDisplay() {
+                document.getElementById('generationTime').textContent = 
+                    new Date().toLocaleTimeString('zh-CN', { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                
+                document.getElementById('particleCount').textContent = this.particles.length;
+            }
+        }
+        
+        // ===== 页面加载后立即启动 =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // 立即创建模拟器（不等待任何其他资源）
+            window.simulator = new UltraFastParticleSimulator();
+        });
+    </script>
+</body>
+</html>
