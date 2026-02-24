@@ -38,7 +38,7 @@ temp/
 .cache/
 
 # Package manager specific
-package-lock.json
+# package-lock.json  # 注释掉，我们需要这个文件
 yarn.lock
 pnpm-lock.yaml
 
@@ -72,6 +72,44 @@ docs/_build/
 *.gif
 *.bmp
 *.tiff
+
+# OpenClaw workspace files
+.openclaw/
+AGENTS.md
+BOOTSTRAP.md
+HEARTBEAT.md
+IDENTITY.md
+MEMORY.md
+SOUL.md
+TOOLS.md
+USER.md
+memory/
+
+# Python scripts (not part of this project)
+*.py
+*.pyc
+__pycache__/
+
+# Other project directories
+qimen-web/
+video_summary_out/
+世界杯相关视频/
+无人机视频/
+测试视频/
+
+# Text files
+*.txt
+*.json
+pikachu_video_url.txt
+pokemon_task_id.txt
+request_body.json
+seedance_response.json
+seedream_image_response.json
+task_status_1.json
+temp_body.json
+
+# JavaScript files (not part of this project)
+server_new.js
 
 # Audio files
 *.mp3
